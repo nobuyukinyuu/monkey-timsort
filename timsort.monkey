@@ -159,9 +159,9 @@ Public
 
         ' If array is small, do a "mini-TimSort" with no merges
         If (nRemaining < MIN_MERGE) Then
-            int initRunLen = countRunAndMakeAscending(a, lo, hi, c);
-            binarySort(a, lo, hi, lo + initRunLen, c);
-            return;
+            Local initRunLen:Int = countRunAndMakeAscending(a, lo, hi, c)
+            binarySort(a, lo, hi, lo + initRunLen, c)
+            Return
         End If
 
 '        /**
@@ -174,7 +174,7 @@ Public
 
         Repeat
             ' Identify next run
-            Local runLen:Int = countRunAndMakeAscending(a, lo, hi, c);
+            Local runLen:Int = countRunAndMakeAscending(a, lo, hi, c)
 
             ' If run is short, extend to min(minRun, nRemaining)
             If (runLen < minRun) Then
@@ -382,8 +382,8 @@ Public
 '     * @param runLen  the number of elements in the run
 '     */
    Method pushRun:Void(runBase:Int, runLen:Int)
-        Self.runBase[stackSize] = runBase;
-        Self.runLen[stackSize] = runLen;
+        Self.runBase[stackSize] = runBase
+        Self.runLen[stackSize] = runLen
         stackSize += 1
     End Method
 
@@ -481,7 +481,7 @@ Public
 '         * Find where the last element of run1 goes in run2. Subsequent elements
 '         * in run2 can be ignored (because they're already in place).
 '         */
-        len2 = gallopLeft(a[base1 + len1 - 1], a, base2, len2, len2 - 1, c);
+        len2 = gallopLeft(a[base1 + len1 - 1], a, base2, len2, len2 - 1, c)
 
  		  #If CONFIG="debug"
         	If len2 < 0 Then Error("mergeAt: len2 < 0") 'assert len2 >= 0;
@@ -530,7 +530,7 @@ Public
             Local maxOfs:Int = len - hint
             While (ofs < maxOfs And c.Compare(key, a[base + hint + ofs]) > 0)
                 lastOfs = ofs
-                ofs = (ofs Shl 1) + 1;
+                ofs = (ofs Shl 1) + 1
 
                 If (ofs <= 0) Then ofs = maxOfs  ' int overflow                
             Wend
@@ -618,9 +618,9 @@ Public
             If (ofs > maxOfs) Then ofs = maxOfs
 
             ' Make offsets relative to b
-            int tmp = lastOfs;
-            lastOfs = hint - ofs;
-            ofs = hint - tmp;
+            Local tmp:Int = lastOfs
+            lastOfs = hint - ofs
+            ofs = hint - tmp
          Else  ' a[b + hint] <= key
             ' Gallop right until a[b+hint + lastOfs] <= key < a[b+hint + ofs]
             Local maxOfs:Int = len - hint
@@ -709,7 +709,7 @@ Public
         End If
         If (len1 = 1)
             Arrays<T>.Copy(a, cursor2, a, dest, len2) 'System.arraycopy(a, cursor2, a, dest, len2);
-            a[dest + len2] = tmp[cursor1]; ' Last elt of run 1 to end of merge
+            a[dest + len2] = tmp[cursor1] ' Last elt of run 1 to end of merge
             Return
         End If
 
@@ -867,7 +867,7 @@ Public
 
 		
         ' Copy second run into temp array
-        Local a:T[] = Self.a; ' For performance
+        Local a:T[] = Self.a ' For performance
         Local tmp:T[] = ensureCapacity(len2)
         Arrays<T>.Copy(a, base2, tmp, 0, len2) 'System.arraycopy(a, base2, tmp, 0, len2);
 
@@ -888,7 +888,7 @@ Public
             cursor1 -= len1
             Arrays<T>.Copy(a, cursor1 + 1, a, dest + 1, len1) 'System.arraycopy(a, cursor1 + 1, a, dest + 1, len1);
             a[dest] = tmp[cursor2]
-            return;
+            Return
         End If
 
         Local c:Comparator<T> = Self.c   ' Use local variable for performance
@@ -1004,7 +1004,7 @@ Public
 			If outerLoopBreak = True Then Exit 'Break outer loop  -nobu
 			
             If (minGallop < 0) Then minGallop = 0
-            minGallop += 2;  ' Penalize for leaving gallop mode
+            minGallop += 2  ' Penalize for leaving gallop mode
         Forever  ' End of "outer" loop
 		
         'Self.minGallop = minGallop < 1 ? 1:minGallop;  ' Write back to field
@@ -1053,12 +1053,12 @@ Public
             If (newSize < 0) ' Not bloody likely!
                 newSize = minCapacity
             else
-                newSize = Math.min(newSize, a.length Shr 1);  'Unsigned shift should really be used here  -nobu
+                newSize = Math.min(newSize, a.length Shr 1)  'Unsigned shift should really be used here  -nobu
 			End If
 				
             'T[] newArray = (T[]) new Object[newSize];
 			Local newArray:T[]; newArray = newArray.Resize(newSize)
-            tmp = newArray;
+            tmp = newArray
         End If
 
         Return tmp
