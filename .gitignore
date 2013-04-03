@@ -1,0 +1,12 @@
+# Ignore the build folder
+*.build/
+
+# Ignore the docs folder
+*.docs/
+
+# Ignore Jungle IDE files
+*.jungle*
+*.jiproj*
+
+# Ignore thumbs
+Thumbs.db
