@@ -6,7 +6,7 @@
 	https://github.com/Scipion/interesting-javascript-codes/blob/master/timsort.js
 	http://hg.openjdk.java.net/jdk7/tl/jdk/file/tip/src/share/classes/java/util/TimSort.java
 	
-	As a result, this code is probably GPLv3 or Apache. I'm not a lawyer, you can figure it out!
+	As a result, this code is probably GPLv3. I'm not a lawyer, you can figure it out!
 #End
 
 Import arrays

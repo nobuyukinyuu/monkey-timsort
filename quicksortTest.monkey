@@ -1,4 +1,5 @@
 'This is a testing version of Quicksort only.   -nobu
+'The code was taken from the Diddy framework.  http://code.google.com/p/diddy/
 
 #Rem
 	summary: IComparable
