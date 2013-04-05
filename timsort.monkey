@@ -11,6 +11,7 @@
 
 Import arrays
 Import comparator
+'Import bitshift
 
 Class TimSort<T>
     #Rem
@@ -223,17 +224,18 @@ Public
 '     * @param c comparator to used for the sort
 '     */
 '    @SuppressWarnings("fallthrough")
-  Private
 
     Function binarySort:Void(a:T[], lo:Int, hi:Int, start:Int, c:Comparator<T>)
         #If CONFIG="debug"
 		'assert lo <= start & & start <= hi;
 		If Not (lo <= start And start <= hi) Then Error("binarySort: start index out of range")
+		Print("binarySort: " +lo + " to " + hi + ", start: " + start)
 		#End
 		
         If (start = lo) Then start += 1
-        'For(; start < hi; start + +) {
-		While start < hi
+        'For(; start < hi; start ++) {
+		'While start < hi
+		For start = start Until hi
             Local pivot:T = a[start]
 
             ' Set left (and right) to the index where a[start] (pivot) belongs
@@ -241,15 +243,16 @@ Public
             Local right:Int = start
             #If CONFIG="debug"
 			If Not (left <= right) Then Error("binarySort: left > right") 'assert left <= right;
-
 			#End 
+
 '            /*
 '             * Invariants:
 '             *   pivot >= all in [lo, left).
 '             *   pivot <  all in [right, start).
 '             */
+
             While (left < right)
-                Local mid:Int = (left + right) shr 1
+                Local mid:Int = (left + right) shr 1  'This should really be unsigned shift right  -nobu
                 If (c.Compare(pivot, a[mid]) < 0) Then
                     right = mid
                 else
@@ -269,17 +272,30 @@ Public
 '             */
             Local n:Int = start - left  'The number of elements To move
             ' Switch is just an optimization for arraycopy in default case
-            Select n
-                Case 2; a[left + 2] = a[left + 1]
-                Case 1; a[left + 1] = a[left]
-            			Exit
-                Default; Arrays<T>.Copy(a, left, a, left + 1, n) 'System.arraycopy(a, left, a, left + 1, n)
-            End Select
-            a[left] = pivot
-		start += 1
-        End While
-    End Function
 
+'            Select n
+'                Case 2; a[left + 2] = a[left + 1]
+'                Case 1; a[left + 1] = a[left]
+'            			Exit
+'                Default; Arrays<T>.Copy(a, left, a, left + 1, n) 'System.arraycopy(a, left, a, left + 1, n)
+'			  End Select
+
+		'Wow!  Something weird happens with Select Case and Generics, so let's replace it with Ifs...
+            If n = 2 Then
+				a[left + 2] = a[left + 1]
+            ElseIf n = 1
+				a[left + 1] = a[left]
+            	Exit
+            Else
+				Arrays<T>.Copy(a, left, a, left + 1, n) 'System.arraycopy(a, left, a, left + 1, n)
+			End If
+
+            a[left] = pivot
+
+		'start += 1
+        Next 'End While
+    End Function
+  Private
 '    /**
 '     * Returns the length of the run beginning at the specified position in
 '     * the specified array and reverses the run if it is descending (ensuring
@@ -326,6 +342,8 @@ Public
 			Wend
         End If
 
+		Print("countRun: " + lo + " to " + hi)
+
         Return runHi - lo
     End Function
 
@@ -336,10 +354,10 @@ Public
 '     * @param lo the index of the first element in the range to be reversed
 '     * @param hi the index after the last element in the range to be reversed
 '     */
-    Function reverseRange:Void(a:Object[], lo:Int, hi:Int)
+    Function reverseRange:Void(a:T[], lo:Int, hi:Int)
         hi -= 1
         While (lo < hi)
-            Local t:Object = a[lo]
+            Local t:T = a[lo]
             a[lo] = a[hi]; lo += 1    ' a[lo++] = a[hi];
             a[hi] = t; hi -= 1        ' a[hi--] = t;
         Wend
@@ -364,13 +382,14 @@ Public
 '     */
     Function minRunLength:Int(n:Int)
 		#If CONFIG="debug"
-	        If Not n >= 0 Then Error("minRunLength(n) must be >0") 'assert n >= 0;
+	        If Not (n >= 0) Then Error("minRunLength(n) must be >0") 'assert n >= 0;
 		#End
 		
         Local r:Int = 0      ' Becomes 1 if any 1 bits are shifted off
         While (n >= MIN_MERGE)
-            r |= r(n & 1)
-            n shr= 1
+            r = r | (n & 1)
+			
+            n = n Shr 1
         Wend
         Return n + r
     End Function
@@ -525,7 +544,7 @@ Public
 		
         Local lastOfs:Int = 0
         Local ofs:Int = 1
-        If (c.compare(key, a[base + hint]) > 0)
+        If (c.Compare(key, a[base + hint]) > 0)
             ' Gallop right until a[base+hint+lastOfs] < key <= a[base+hint+ofs]
             Local maxOfs:Int = len - hint
             While (ofs < maxOfs And c.Compare(key, a[base + hint + ofs]) > 0)
@@ -686,6 +705,8 @@ Public
 		#If CONFIG="debug"
         'assert len1 > 0 && len2 > 0 && base1 + len1 == base2;
 		If Not (len1 > 0 And len2 > 0 And base1 + len1 = base2) Then Error("mergeLo: honk")
+
+		Print("mergeLo: base1: " + base1 + ", len1: " + len1 + ", base2: " + base2 + ", len2: " + len2)
 		#End
 		
         ' Copy first run into temp array
@@ -820,7 +841,7 @@ Public
 				End If
 
                 minGallop -= 1
-            Until Not (count1 >= MIN_GALLOP | count2 >= MIN_GALLOP)
+            Until Not (count1 >= MIN_GALLOP Or count2 >= MIN_GALLOP)
 			
 			If outerLoopBreak = True Then Exit   'Break outer loop  -nobu
 			
@@ -838,7 +859,8 @@ Public
             Arrays<T>.Copy(a, cursor2, a, dest, len2) 'System.arraycopy(a, cursor2, a, dest, len2);
             a[dest + len2] = tmp[cursor1] '  Last elt of run 1 to end of merge
         ElseIf(len1 = 0)
-            Error("Comparison method violates its general contract!")
+			Print("len2: " + len2)
+            'Error("mergeLo: Comparison method violates its general contract!")
         Else
  			#If CONFIG="debug"
               If len2 <> 0 Then Error("assert len2 == 0;")
@@ -863,6 +885,8 @@ Public
 		#If CONFIG="debug"
         'assert len1 > 0 && len2 > 0 && base1 + len1 == base2;
 		If Not (len1 > 0 And len2 > 0 And base1 + len1 = base2) Then Error("mergeHi: honk")
+		
+		Print("MergeHi: base1: " + base1 + ", len1: " + len1 + ", base2: " + base2 + ", len2: " + len2)
 		#End
 
 		
@@ -999,7 +1023,7 @@ Public
 				End If
 					
                 minGallop -= 1
-            Until Not (count1 >= MIN_GALLOP | count2 >= MIN_GALLOP)
+            Until Not (count1 >= MIN_GALLOP Or count2 >= MIN_GALLOP)
 			
 			If outerLoopBreak = True Then Exit 'Break outer loop  -nobu
 			
@@ -1020,7 +1044,7 @@ Public
             Arrays<T>.Copy(a, cursor1 + 1, a, dest + 1, len1) 'System.arraycopy(a, cursor1 + 1, a, dest + 1, len1);
             a[dest] = tmp[cursor2]  ' Move first elt of run2 to front of merge
         ElseIf(len2 = 0)
-            Error("Comparison method violates its general contract!")
+            'Error("mergeHi: Comparison method violates its general contract!")
         Else
 			#If CONFIG="debug"
               If len1 <> 0 Then Error("mergeHi: assert len1 == 0;")
@@ -1040,7 +1064,7 @@ Public
 '     * @return tmp, whether or not it grew
 '     */
     Method ensureCapacity:T[] (minCapacity:Int)
-        If (tmp.length < minCapacity)
+        If (tmp.Length < minCapacity)
             ' Compute smallest power of 2 > minCapacity
             Local newSize:Int = minCapacity
             newSize |= newSize Shr 1
@@ -1052,8 +1076,8 @@ Public
 
             If (newSize < 0) ' Not bloody likely!
                 newSize = minCapacity
-            else
-                newSize = Math.min(newSize, a.length Shr 1)  'Unsigned shift should really be used here  -nobu
+            Else
+                newSize = Min(newSize, a.Length Shr 1)  'Unsigned shift should really be used here  -nobu
 			End If
 				
             'T[] newArray = (T[]) new Object[newSize];
