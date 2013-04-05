@@ -11,7 +11,6 @@
 
 Import arrays
 Import comparator
-'Import bitshift
 
 Class TimSort<T>
     #Rem
@@ -229,7 +228,7 @@ Public
         #If CONFIG="debug"
 		'assert lo <= start & & start <= hi;
 		If Not (lo <= start And start <= hi) Then Error("binarySort: start index out of range")
-		Print("binarySort: " +lo + " to " + hi + ", start: " + start)
+		'Print("binarySort: " +lo + " to " + hi + ", start: " + start)
 		#End
 		
         If (start = lo) Then start += 1
@@ -271,21 +270,17 @@ Public
 '             * Slide elements over to make room to make room for pivot.
 '             */
             Local n:Int = start - left  'The number of elements To move
-            ' Switch is just an optimization for arraycopy in default case
+           
+		   
+		    ' "Switch is just an optimization for arraycopy in default case"
 
-'            Select n
-'                Case 2; a[left + 2] = a[left + 1]
-'                Case 1; a[left + 1] = a[left]
-'            			Exit
-'                Default; Arrays<T>.Copy(a, left, a, left + 1, n) 'System.arraycopy(a, left, a, left + 1, n)
-'			  End Select
-
-		'Wow!  Something weird happens with Select Case and Generics, so let's replace it with Ifs...
-            If n = 2 Then
-				a[left + 2] = a[left + 1]
-            ElseIf n = 1
+		'Wow!  Something weird happens with Select Case and Generics, so let's replace it with Ifs... 
+		'Note that the original Switch code exhibited fall-thru behavior, which Monkey can't do,
+		'so this particular block of code is different.  -nobu
+            If n = 2 Then	a[left + 2] = a[left + 1]
+            If n = 1
 				a[left + 1] = a[left]
-            	Exit
+            	'Exit
             Else
 				Arrays<T>.Copy(a, left, a, left + 1, n) 'System.arraycopy(a, left, a, left + 1, n)
 			End If
@@ -341,8 +336,6 @@ Public
                 runHi += 1
 			Wend
         End If
-
-		Print("countRun: " + lo + " to " + hi)
 
         Return runHi - lo
     End Function
@@ -706,7 +699,7 @@ Public
         'assert len1 > 0 && len2 > 0 && base1 + len1 == base2;
 		If Not (len1 > 0 And len2 > 0 And base1 + len1 = base2) Then Error("mergeLo: honk")
 
-		Print("mergeLo: base1: " + base1 + ", len1: " + len1 + ", base2: " + base2 + ", len2: " + len2)
+		'Print("mergeLo: base1: " + base1 + ", len1: " + len1 + ", base2: " + base2 + ", len2: " + len2)
 		#End
 		
         ' Copy first run into temp array
@@ -841,7 +834,7 @@ Public
 				End If
 
                 minGallop -= 1
-            Until Not (count1 >= MIN_GALLOP Or count2 >= MIN_GALLOP)
+            Until Not (count1 >= MIN_GALLOP | count2 >= MIN_GALLOP)
 			
 			If outerLoopBreak = True Then Exit   'Break outer loop  -nobu
 			
@@ -886,7 +879,7 @@ Public
         'assert len1 > 0 && len2 > 0 && base1 + len1 == base2;
 		If Not (len1 > 0 And len2 > 0 And base1 + len1 = base2) Then Error("mergeHi: honk")
 		
-		Print("MergeHi: base1: " + base1 + ", len1: " + len1 + ", base2: " + base2 + ", len2: " + len2)
+		'Print("MergeHi: base1: " + base1 + ", len1: " + len1 + ", base2: " + base2 + ", len2: " + len2)
 		#End
 
 		
@@ -1023,7 +1016,7 @@ Public
 				End If
 					
                 minGallop -= 1
-            Until Not (count1 >= MIN_GALLOP Or count2 >= MIN_GALLOP)
+            Until Not (count1 >= MIN_GALLOP | count2 >= MIN_GALLOP)
 			
 			If outerLoopBreak = True Then Exit 'Break outer loop  -nobu
 			
@@ -1081,7 +1074,8 @@ Public
 			End If
 				
             'T[] newArray = (T[]) new Object[newSize];
-			Local newArray:T[]; newArray = newArray.Resize(newSize)
+			'Local newArray:T[]; newArray = newArray.Resize(newSize)
+			Local newArray:T[newSize]
             tmp = newArray
         End If
 
