@@ -1,4 +1,11 @@
 #Rem
+Copyright (c) 2011 Steve Revill and Shane Woolcock
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+#End
+
+#Rem
 header:
 Example:
 Arrays<Int>.Join([1,2,3], [4,5]) returns a new array [1,2,3,4,5]
@@ -6,11 +13,11 @@ Arrays<String>.Fill(["a","b","c"], "d") fills the existing array and returns it 
 Arrays<Int>.Slice([1,3,5,7,9], 1, 4) returns a new array [3,5,7] which is from 1 (inclusive) to 4 (exclusive)
 Arrays<Float>.Clone([1.0,2.5,3.0]) returns a new array with the same contents [1.0,2.5,3.0]
 Arrays<Int>.Copy([1,2,3,4], 1, [5,6,7,8], 2, 2) copies 2 characters from index 1 in src to index 3 in dest. dest now contains [5,6,2,3]
-Join accepts up to 10 arrays.  Unused parameters are assumed to be empty arrays.
+Join accepts up to 10 arrays. Unused parameters are assumed to be empty arrays.
 #End
 
 #Rem
-	Summary: The Arrays class
+Summary: The Arrays class
 #End
 Class Arrays<T>
 	'summary: Join returns a new array
