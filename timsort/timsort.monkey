@@ -87,7 +87,7 @@ Private
 '     * @param a the array to be sorted
 '     * @param c the comparator to determine the order of the sort
 '     */
-Public
+
     Method New(a:T[], c:Comparator<T>)
         Self.a = a
         Self.c = c
@@ -133,14 +133,13 @@ Public
         runBase = New int[stackLen]
         runLen = New int[stackLen]
     End Method
-
+	
 '    /*
 '     * The next two methods (which are package private and static) constitute
 '     * the entire API of this class.  Each of these methods obeys the contract
 '     * of the public method with the same signature in java.util.Arrays.
 '     */
-
-
+Public
     Function Sort:Void(a:T[], c:Comparator<T>)
         Sort(a, 0, a.Length, c)
     End Function
