@@ -70,10 +70,12 @@ Class Test Extends App
 			
 		If KeyHit(KEY_ENTER) or Touches = 3  'Sort
 			Local ms:Int = Millisecs()
-
+			Local totalTime:Int
+			
 			Select CurrentSortType
 			Case 0 'TimSort
 				TimSort<Int>.Sort(arr, New IntComparator())
+				totalTime = Millisecs() -ms
 
 			Case 1 'diddy Quicksort
 				'quicksort works on boxed ints. We need to create an array of those first.
@@ -81,7 +83,13 @@ Class Test Extends App
 				For Local i:Int = 0 Until arr2.Length
 					arr2[i] = New IntObject(arr[i])
 				Next
+				
+				ms = Millisecs()
+				
 				QuickSort(arr2, 0, arr.Length - 1, DEFAULT_COMPARATOR)
+
+				totalTime = Millisecs() -ms
+				
 				'Now, unbox the array.
 				For Local i:Int = 0 Until arr2.Length
 					arr[i] = IntObject(arr2[i]).value
@@ -89,11 +97,10 @@ Class Test Extends App
 
 			Case 2 'Binary Sort
 				TimSort<Int>.binarySort(arr, 0, arr.Length, 0, New IntComparator())
+				totalTime = Millisecs() -ms
 			End Select
 			
-			Local now:Int = Millisecs()
-			now -= ms
-			Local printMsg:String = SortType[CurrentSortType] + " took " + now + " millisecs"
+			Local printMsg:String = SortType[CurrentSortType] + " took " + totalTime + " millisecs"
 			d.Print(printMsg); Print(printMsg)
 			
 		End If

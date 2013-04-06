@@ -2,11 +2,8 @@
 	TimSort for Monkey
 	2013 Nobuyuki ( nobu@subsoap.com )
 	
-	Based on code from these sources:
-	https://github.com/Scipion/interesting-javascript-codes/blob/master/timsort.js
-	http://hg.openjdk.java.net/jdk7/tl/jdk/file/tip/src/share/classes/java/util/TimSort.java
-	
-	As a result, this code is probably GPLv3. I'm not a lawyer, you can figure it out!
+	Based on Java classpath code from Josh Bloch:
+	http://hg.openjdk.java.net/jdk7/tl/jdk/file/tip/src/share/classes/java/util/TimSort.java	
 #End
 
 Import arrays
