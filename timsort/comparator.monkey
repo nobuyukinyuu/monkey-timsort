@@ -37,7 +37,7 @@ Class FloatComparator Extends Comparator<Float>
 		Descending = descending
 	End Method
 
-	Method Compare:Float(lhs:Float, rhs:Float)
+	Method Compare:Int(lhs:Float, rhs:Float)
 		If Descending
 			If lhs < rhs Then Return 1
 			If lhs > rhs Then Return - 1
@@ -48,4 +48,21 @@ Class FloatComparator Extends Comparator<Float>
 			Return 0
 		End If
 	End Method
+End Class
+
+Class StringComparator Extends Comparator<String>
+	Field Descending:Bool
+	
+	Method New(descending:Bool)
+		Descending = descending
+	End Method
+
+	Method Compare:Int(lhs:String, rhs:String)
+		If Descending
+			Return rhs.Compare(lhs)
+		Else
+			Return lhs.Compare(rhs)
+		End If
+	End Method
+	
 End Class

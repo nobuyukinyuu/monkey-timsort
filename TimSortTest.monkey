@@ -23,6 +23,7 @@ End Function
 
 Class Test Extends App
 	Field arr:Int[]
+	Field arrs:String[]
 	Const ARR_LEN:Int = 50000
 	Field SEED:Int = 1234   'Set this seed to produce predictable random arrays
 			
@@ -35,6 +36,7 @@ Class Test Extends App
 		SetUpdateRate 60
 
 		arr = arr.Resize(ARR_LEN)
+		arrs = arrs.Resize(ARR_LEN)
 		
 		'Populate the array.
 		PopulateArray()
@@ -44,8 +46,19 @@ Class Test Extends App
 	Method PopulateArray:Void()
 		Seed = SEED
 
+		Local wordLen:Int = Rnd(10)
+		Local word:Int[]
 		For Local i:Int = 0 Until ARR_LEN
 			arr[i] = Rnd(-$FF, $FFFFF)
+			
+			wordLen = Rnd(8) + 2
+			word = word.Resize(wordLen)
+			For Local j:Int = 0 Until wordLen
+				word[j] = Rnd(65, 122)
+			Next
+			
+			arrs[i] = String.FromChars(word)
+
 		Next
 	End Method
 		
@@ -75,28 +88,34 @@ Class Test Extends App
 			Select CurrentSortType
 			Case 0 'TimSort
 				TimSort<Int>.Sort(arr, New IntComparator())
+				TimSort < String>.Sort(arrs, New StringComparator())
 				totalTime = Millisecs() -ms
 
 			Case 1 'diddy Quicksort
 				'quicksort works on boxed ints. We need to create an array of those first.
 				Local arr2:Object[arr.Length]
+				Local arrs2:Object[arrs.Length]
 				For Local i:Int = 0 Until arr2.Length
 					arr2[i] = New IntObject(arr[i])
+					arrs2[i] = New StringObject(arrs[i])
 				Next
 				
 				ms = Millisecs()
 				
 				QuickSort(arr2, 0, arr.Length - 1, DEFAULT_COMPARATOR)
+				QuickSort(arrs2, 0, arrs.Length - 1, DEFAULT_COMPARATOR)
 
 				totalTime = Millisecs() -ms
 				
 				'Now, unbox the array.
 				For Local i:Int = 0 Until arr2.Length
 					arr[i] = IntObject(arr2[i]).value
+					arrs[i] = StringObject(arrs2[i]).value
 				Next
 
 			Case 2 'Binary Sort
 				TimSort<Int>.binarySort(arr, 0, arr.Length, 0, New IntComparator())
+				TimSort < String>.binarySort(arrs, 0, arrs.Length, 0, New StringComparator())
 				totalTime = Millisecs() -ms
 			End Select
 			
@@ -131,6 +150,8 @@ Class Test Extends App
 		
 		For Local i:Int = 0 To Min(arr.Length - 1, 32)
 			DrawText(i + ": " + arr[i], DeviceWidth() -8, i * 16, 1)
+			DrawText(arrs[i], DeviceWidth() -96, i * 16, 1)
+			
 		Next
 		
 		d.Render(16, 320)
